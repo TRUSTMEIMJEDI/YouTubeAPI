@@ -29,3 +29,45 @@
 # def getMp3(url):
 #     audio = pafy.new('https://www.youtube.com/watch?v=' + url)
 #     return audio.getbestaudio().download()
+
+
+@get('/mp4/<quality>/<url>')
+def getMp4(quality, url):
+    video = YouTube('https://www.youtube.com/watch?v=' + url)
+
+    def quality_of_vid(x):
+        switcher = {
+            'best': video.streams.get_by_itag('137'),
+            'high': video.streams.get_by_itag('136'),
+            'medium': video.streams.get_by_itag('135'),
+            'low': video.streams.get_by_itag('18'),
+        }
+        return switcher.get(x, video.streams.first())
+    return quality_of_vid(quality).download()
+
+
+@get('/mp4/<quality>/<url>')
+def getMp4(quality, url):
+    video = pafy.new(url)
+    list_videos = video.allstreams
+    for i in range(0, len(list_videos)):
+        if list_videos[i].extension == "mp4":
+            if list_videos[i].dimensions[1] == 1080:
+                index_best = i
+            if list_videos[i].dimensions[1] == 720:
+                index_high = i
+            if list_videos[i].dimensions[1] == 480:
+                index_medium = i
+            if list_videos[i].dimensions[1] == 360:
+                index_low = i
+
+    def quality_of_vid(x):
+        switcher = {
+            'best': list_videos[index_best],
+            'high': list_videos[index_high],
+            'medium': list_videos[index_medium],
+            'low': list_videos[index_low],
+        }
+        return switcher.get(x, video.getbestvideo())
+
+    return quality_of_vid(quality).download()
