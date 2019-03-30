@@ -3,31 +3,42 @@ from bs4 import BeautifulSoup
 import requests
 import json
 from pytube import YouTube
+import pafy
 # import os
 
 
 @get('/mp4/<quality>/<url>')
 def getMp4(quality, url):
-    video = YouTube('https://www.youtube.com/watch?v=' + url)
+    video = pafy.new(url)
+    list_videos = video.allstreams
+    for i in range(0, len(list_videos)):
+        if list_videos[i].extension == "mp4":
+            if list_videos[i].dimensions[1] == 1080:
+                index_best = i
+            if list_videos[i].dimensions[1] == 720:
+                index_high = i
+            if list_videos[i].dimensions[1] == 480:
+                index_medium = i
+            if list_videos[i].dimensions[1] == 360:
+                index_low = i
 
     def quality_of_vid(x):
         switcher = {
-            'best': video.streams.get_by_itag('137'),
-            'high': video.streams.get_by_itag('136'),
-            'medium': video.streams.get_by_itag('135'),
-            'low': video.streams.get_by_itag('18'),
+            'best': list_videos[index_best],
+            'high': list_videos[index_high],
+            'medium': list_videos[index_medium],
+            'low': list_videos[index_low],
         }
-        return switcher.get(x, video.streams.first())
+        return switcher.get(x, video.getbestvideo())
+
     return quality_of_vid(quality).download()
 
 
 @get('/mp3/<url>')
 def getMp3(url):
-    audio = YouTube('https://www.youtube.com/watch?v=' + url)
-    # my_file = audio.streams.get_by_itag('140').download()
-    # base = os.path.splitext(my_file)[0]
-    # return os.rename(my_file, base + '.mp3')
-    return audio.streams.get_by_itag('140').download()
+    video = pafy.new(url)
+    audio = video.getbestaudio()
+    return audio.download()
 
 
 @get('/views/<url>')
@@ -53,44 +64,14 @@ def getViews(url):
 
 @get('/desc/<url>')
 def getDescription(url):
-    r = requests.get('https://www.youtube.com/watch?v=' + url)
-    web_content = r.content
-    soup = BeautifulSoup(web_content, 'html.parser')
-    views = soup.find_all('script')
-    text = "window"
-    text1 = "viewCount"
-    for i in range(0, len(views)):
-        if text in views[i].text:
-            if text1 in views[i].text:
-                tab = views[i].text
-
-    tab1 = tab.replace("\\/", "/")
-    tab2 = tab1.replace('\\\"', '"')
-    tab3 = tab2.replace("\\\\", "\\")
-
-    tab4 = tab3.split(";")
-    for i in range(0, len(tab4)):
-        if text1 in tab4[i]:
-            tab5 = tab4[i].replace('\\\"', '"')
-            tab6 = tab5.replace('""', '"')
-            tab7 = tab6.split(",")
-            break
-
-    for i in range(0, len(tab7)):
-        if "shortDescription" in tab7[i]:
-            short_description = json.loads("{" + tab7[i] + "}")
-            break
-
-    return short_description
+    video = pafy.new(url)
+    return video.description
 
 
 @get('/title/<url>')
 def getTitle(url):
-    r = requests.get('https://www.youtube.com/watch?v=' + url)
-    web_content = r.text
-    soup = BeautifulSoup(web_content, 'lxml')
-    title = soup.find_all('h1')[1].text.replace("\n", "").replace("    ", "").replace("  ", "")
-    return {'title': title}
+    video = pafy.new(url)
+    return video.title
 
 
 @get('/cover/<url>')
@@ -101,35 +82,8 @@ def getCover(url):
 
 @get('/author/<url>')
 def getAuthor(url):
-    r = requests.get('https://www.youtube.com/watch?v=' + url)
-    web_content = r.content
-    soup = BeautifulSoup(web_content, 'html.parser')
-    views = soup.find_all('script')
-    text = "window"
-    text1 = "viewCount"
-    for i in range(0, len(views)):
-        if text in views[i].text:
-            if text1 in views[i].text:
-                tab = views[i].text
-
-    tab1 = tab.replace("\/", "/")
-    tab2 = tab1.replace('\\\"', '"')
-    tab3 = tab2.replace("\\\\", "\\")
-
-    tab4 = tab3.split(";")
-    for i in range(0, len(tab4)):
-        if text1 in tab4[i]:
-            tab5 = tab4[i].replace('\\\"', '"')
-            tab6 = tab5.replace('""', '"')
-            tab7 = tab6.split(",")
-            break
-
-    for i in range(0, len(tab7)):
-        if "author" in tab7[i]:
-            author = json.loads("{" + tab7[i] + "}")
-            break
-
-    return author
+    video = pafy.new(url)
+    return video.author
 
 
 @get('/author-img/<url>')
