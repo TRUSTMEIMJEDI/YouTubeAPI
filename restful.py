@@ -116,8 +116,10 @@ def getAuthor(url):
             if text1 in views[i].text:
                 tab = views[i].text
 
-    tab1 = tab.replace("\/", "/")
-    tab2 = tab1.replace('\\\"', '"')
+    tab1 = tab.replace("\\/", "/")
+    # \/
+    tab2 = tab1.replace('\\\\"', '"')
+    # \\\
     tab3 = tab2.replace("\\\\", "\\")
 
     tab4 = tab3.split(";")
