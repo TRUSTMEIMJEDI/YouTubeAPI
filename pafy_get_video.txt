@@ -1,0 +1,31 @@
+# @get('/mp4/<quality>/<url>')
+# def getMp4(quality, url):
+#     video = pafy.new('https://www.youtube.com/watch?v=' + url)
+#     list_of_quality = video.videostreams
+#
+#     for i in range(0, len(list_of_quality)):
+#         if "video:mp4@1920x1080" in str(list_of_quality[i]):
+#             index_best = i
+#         if "video:mp4@1280x720" in str(list_of_quality[i]):
+#             index_high = i
+#         if "video:mp4@854x480" in str(list_of_quality[i]):
+#             index_medium = i
+#         if "video:mp4@640x360" in str(list_of_quality[i]):
+#             index_low = i
+#
+#     def quality_of_vid(x):
+#         switcher = {
+#             'best': list_of_quality[index_best],
+#             'high': list_of_quality[index_high],
+#             'medium': list_of_quality[index_medium],
+#             'low': list_of_quality[index_low],
+#         }
+#         return switcher.get(x, video.getbest())
+#     # str(video.allstreams)
+#     return quality_of_vid(quality).download()
+
+
+@get('/mp3/<url>')
+# def getMp3(url):
+#     audio = pafy.new('https://www.youtube.com/watch?v=' + url)
+#     return audio.getbestaudio().download()
