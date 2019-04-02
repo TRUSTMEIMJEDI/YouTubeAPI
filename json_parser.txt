@@ -1,0 +1,21 @@
+import json
+
+r = requests.get('https://www.youtube.com/watch?v=2cXExMhjQtw')
+web_content = r.content
+soup = BeautifulSoup(web_content, 'html.parser')
+#for i in range(0, 50):
+views = soup.find_all('script')
+text = "window"
+text1 = "viewCount"
+for i in range(0, len(views)):
+    if text in views[i].text: 
+         if text1 in views[i].text:
+                print(i)
+                #print(views[i].text.split("=", 2)[2])
+                views1 = views[i].text.split("=", 2)[2]
+                views2 = views1.rsplit(";", 6)[0]
+                views3 = views2.replace("""\\\\""", """\\""").replace("""\\/""", """/""").replace('''\\\"''', '''"''').replace("\\u0026", "&")
+                #views4 = views3.rsplit("}", 1)[0]
+                print(views3)
+                json_parse = json.loads(views3)
+                print(json_parse)
