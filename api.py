@@ -4,7 +4,6 @@ import requests
 import json
 # from pytube import YouTube
 import pafy
-# import os
 
 
 @get('/mp4/<quality>/<url>')
